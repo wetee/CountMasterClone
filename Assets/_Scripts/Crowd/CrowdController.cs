@@ -9,7 +9,8 @@ public class CrowdController : MonoBehaviour
     [HideInInspector] public float swerveSpeed;
     [HideInInspector] public readonly float maxSwerveSpeed = 7f;
     [HideInInspector] public float forwardSpeed;
-    [HideInInspector] public readonly float maxForwardSpeed = 4f;
+    [HideInInspector] public float baseForwardSpeed = 5f;
+    [HideInInspector] public readonly float maxForwardSpeed = 12f;
 
     // input clamp stuff
     [HideInInspector] public float minBound;
@@ -25,12 +26,11 @@ public class CrowdController : MonoBehaviour
 
     private void Start() {
         swerveSpeed = maxSwerveSpeed;
-        forwardSpeed = maxForwardSpeed;
+        forwardSpeed = baseForwardSpeed;
         minBound = minBoundStander;
         maxBound = maxBoundStander;
     }
 
-    
     private void LateUpdate() {
         switch (GameManager.Instance.currentGameState) {
             case GameState.PlayScreen:

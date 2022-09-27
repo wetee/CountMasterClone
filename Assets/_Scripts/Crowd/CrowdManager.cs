@@ -8,11 +8,11 @@ public class CrowdManager : Singleton<CrowdManager> {
     public List<Player> players = new List<Player>();
     public SphereCollider _collider;
 
-    private Transform playerTemplate;
+    public Transform playerTemplate;
     private CrowdController crowdController;
 
-    [Range(0f, 1f)] [SerializeField] private float distanceFactor;
-    [Range(0f, 1f)] [SerializeField] private float radius;
+    [Range(0f, 1f)][SerializeField] private float distanceFactor;
+    [Range(0f, 1f)][SerializeField] private float radius;
 
     private void Awake() {
         InitializeList();
@@ -21,22 +21,15 @@ public class CrowdManager : Singleton<CrowdManager> {
         crowdController = GetComponent<CrowdController>();
     }
 
-    private void Update() {
-        if (Input.GetMouseButtonDown(1)) {
-            SpawnPlayer(10);
-        }
-        else if (Input.GetMouseButtonDown(2)) {
-            FormatPositions();
-        }
-    }
-
     //setup the initial list
     private void InitializeList() {
-        for (int i = 0; i < transform.childCount; i++) players.Add(transform.GetChild(i).GetComponent<Player>());
+        //for (int i = 0; i < transform.childCount; i++) players.Add(transform.GetChild(i).GetComponent<Player>());
+
+        players.Add(transform.Find("Luffy").GetComponent<Player>());
     }
 
     public void SpawnPlayer(int count) {
-        for(int i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
             Transform tempPlayer = Instantiate(playerTemplate, GetPositon(players.Count + 1), Quaternion.identity, transform);
             players.Add(tempPlayer.GetComponent<Player>());
             StartCoroutine(TurnOffCollider(tempPlayer.GetComponent<CapsuleCollider>()));
@@ -47,7 +40,7 @@ public class CrowdManager : Singleton<CrowdManager> {
     }
 
     public void FormatPositions() {
-        for(int i = 0; i < players.Count; i++) {
+        for (int i = 0; i < players.Count; i++) {
             float tempX = distanceFactor * Mathf.Sqrt(i) * Mathf.Cos(i * radius);
             float tempZ = distanceFactor * Mathf.Sqrt(i) * Mathf.Sin(i * radius);
 
@@ -76,10 +69,28 @@ public class CrowdManager : Singleton<CrowdManager> {
     }
 
     public void RemovePlayer(Player playerArg) {
-        if (playerArg == null) return; 
-        
+        if (playerArg == null) return;
+
         players.Remove(playerArg);
         Destroy(playerArg.gameObject);
+
+    }
+
+    public Player RemoveLastPlayer() {
+        Player playerArg = players[^1];
+        players.RemoveAt(players.Count - 1);
+
+        return playerArg;
+    }
+
+    public void RemoveExcessedPlayer(int rowCountArg, int initialCountArg) {
+        int tempCount = rowCountArg * (rowCountArg + 1) / 2;
+        tempCount = initialCountArg - tempCount;
+
+        for (int i = 0; i < tempCount; i++) {
+            Player player = RemoveLastPlayer();
+            Destroy(player.gameObject);
+        }
 
     }
 
@@ -108,4 +119,5 @@ public class CrowdManager : Singleton<CrowdManager> {
         yield return new WaitForSeconds(0.4f);
         ColliderRadiusHandler();
     }
+
 }

@@ -1,22 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class CrowdActions : MonoBehaviour {
 
     private CrowdController crowdController;
+    private FormationHandler formationHandler;
+    [SerializeField] private CinemachineVirtualCamera virtualCam;
 
     private void Awake() {
         crowdController = GetComponent<CrowdController>();
+        formationHandler = GetComponent<FormationHandler>();
+        CinemachineFramingTransposer transposer = virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>();
+        transposer.m_CameraDistance = 21.5f;
+
     }
 
     private void OnTriggerExit(Collider other) {
         if (other.gameObject.CompareTag("Obstacle")) {
             StartCoroutine(CrowdManager.Instance.DelayedFormat());
-        }
-        else if (other.gameObject.CompareTag("ZombieHorde")) {
-            StartCoroutine(CrowdManager.Instance.DelayedFormat());
-            crowdController.forwardSpeed = crowdController.maxForwardSpeed;
         }
     }
 
@@ -29,10 +32,13 @@ public class CrowdActions : MonoBehaviour {
             CrowdManager.Instance.FormatPositions();
         }
         else if (other.gameObject.CompareTag("Finish")) {
-            GameManager.Instance.currentGameState = GameState.Victory;
+            //GameManager.Instance.currentGameState = GameState.Victory;
+            formationHandler.Formation();
+            CinemachineFramingTransposer transposer = virtualCam.GetCinemachineComponent<CinemachineFramingTransposer>();
+            transposer.m_CameraDistance += 10f;
         }
         else if (other.gameObject.CompareTag("ZombieHorde")) {
-            crowdController.forwardSpeed = crowdController.maxForwardSpeed / 3.5f;
+            StartCoroutine(SpeedHandler());
         }
     }
     private void HandleOperator(Effector effectorArg) {
@@ -51,5 +57,11 @@ public class CrowdActions : MonoBehaviour {
         }
     }
 
-    
+    private IEnumerator SpeedHandler() {
+        crowdController.forwardSpeed = crowdController.baseForwardSpeed / 2f;
+        yield return new WaitForSeconds(1.5f);
+        crowdController.forwardSpeed = crowdController.baseForwardSpeed;
+
+    }
+
 }

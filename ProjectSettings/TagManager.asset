@@ -8,6 +8,10 @@ TagManager:
   - NumberEffector
   - Zombie
   - ZombieHorde
+  - Diamond
+  - DiamondSword
+  - StoneBlock
+  - Victory
   layers:
   - Default
   - TransparentFX
@@ -19,8 +23,8 @@ TagManager:
   - Crowd
   - Obstacle
   - ZombieHorde
-  - 
-  - 
+  - Diamond
+  - Finish
   - 
   - 
   - 
